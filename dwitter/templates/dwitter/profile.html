@@ -1,14 +1,11 @@
-{% extends 'base.html' %}
-{% block content %}
+{% extends 'base.html' %} {% block content %}
 <div class="column">
     <div class="block">
-        <h1 class="title is-1">
-            {{profile.user.username|upper}}'s Dweets
-        </h1>
+        <h1 class="title is-1">{{profile.user.username|upper}}'s Dweets</h1>
     </div>
     <form method="post">
-        {% csrf_token %}
-        <div class="buttons has-addons">
+        {% csrf_token %} {% if profile.pk != user.profile.pk %}
+        <div class="buttons has-addons mb-5">
             {% if profile in user.profile.follows.all %}
             <button class="button is-success is-static">Follow</button>
             <button class="button is-danger" name="follow" value="unfollow">
@@ -21,6 +18,7 @@
             <button class="button is-danger is-static">Unfollow</button>
             {% endif %}
         </div>
+        {% endif %}
     </form>
     <div class="content">
         {% for dweet in profile.user.dweets.all %}
@@ -42,34 +40,36 @@
         </a>
     </div>
     <div class="block">
-        <h3 class="title is-4">
-            {{profile.user.username}} follows:
-        </h3>
+        <h3 class="title is-4">{{profile.user.username}} follows:</h3>
         <div class="content">
+            {% if profile.follows.all|length is 1 %} 0 follows {% else %}
             <ul>
-                {% for following in profile.follows.all %}
+                {% for following in profile.follows.all %} 
+                {% if profile.pk != following.pk %}
                 <li>
                     <a href="{% url 'dwitter:profile' following.id %}">
                         {{ following }}
                     </a>
                 </li>
-                {% endfor %}
+                {% endif %} {% endfor %}
             </ul>
+            {% endif%}
         </div>
     </div>
     <div class="block">
-        <h3 class="title is-4">
-            {{profile.user.username}} is followed by:
-        </h3>
+        <h3 class="title is-4">{{profile.user.username}} is followed by:</h3>
         <div class="content">
             <ul>
-                {% for follower in profile.followed_by.all %}
+                {% if profile.followed_by.all|length is 1 %} No anyone followed
+                {% endif%}
+                {% for follower in profile.followed_by.all %} 
+                {% if follower.pk != profile.pk %}
                 <li>
                     <a href="{% url 'dwitter:profile' follower.id %}">
                         {{ follower }}
                     </a>
                 </li>
-                {% endfor %}
+                {% endif %} {% endfor %}
             </ul>
         </div>
     </div>
